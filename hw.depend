@@ -1,0 +1,5 @@
+# depslib dependency file v1.0
+1571735410 source:c:\users\sibel\desktop\c++\hw\main.cpp
+	<iostream>
+	<cstdlib>
+
