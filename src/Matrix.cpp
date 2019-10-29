@@ -16,6 +16,8 @@ template <typename T> Matrix<T>::Matrix()
     this->row = 10;
     this->value = 0;
     createMatrix(this->column, this->row,  this->value);
+
+
 }
 // parametreli kurucu
 template <typename T> Matrix<T>::Matrix(T r,T c, T v)
@@ -24,10 +26,12 @@ template <typename T> Matrix<T>::Matrix(T r,T c, T v)
     this->column = c;
     this->value = v;
     createMatrix(r,c,v);
+
 }
 // Birim matris veya random matris icin kurucu fonksiyon
 template <typename T> Matrix <T>::Matrix(T r, T c,char v)
 {
+
     this->column = c;
     this->row = r;
     this->value = v;
@@ -84,12 +88,7 @@ template <typename T> void Matrix <T>::IdentityMatrix(T r,T c)
     }
 }
 
-
-
-
-
 // Random Matris
-
 template <typename T> void Matrix <T>::randomMatrix(T r,T c)
 {
 
@@ -106,6 +105,22 @@ template <typename T> void Matrix <T>::randomMatrix(T r,T c)
             array[i][j]=rand() %255;
         }
     }
+}
+
+template <typename T> Matrix<T>& Matrix<T>::scalarOperations(T productValue)
+{
+    temp = new Matrix<int>(this->row,this->column,1);
+
+    for(int i = 0; i<this->row; i++)
+        for(int j = 0; j<this->column; j++)
+        {
+            if(i==j)
+                temp->array[i][j] = temp->array[i][j] * productValue;
+
+            else
+                temp->array[i][j] = 0;
+        }
+    return *temp;
 }
 
 /***********************************************************/
@@ -142,12 +157,12 @@ template <typename T> void Matrix<T>::printMatrix(char *file)
         myfile.close();
     }
     else
-        cout << "Unable to open file";
+        cout << "Dosya islemlerinde problem oldu.";
 }
 
-template <typename T> void Matrix<T>::transpose()
+template <typename T> Matrix<T>& Matrix<T>::transpose()
 {
-    Matrix<int> *temp = new Matrix<int>(this->row,this->column,0);
+    temp = new Matrix<int>(this->row,this->column,0);
     for(int i=0; i<this->row; i++)
     {
         for(int j=0; j<this->column; j++)
@@ -155,27 +170,12 @@ template <typename T> void Matrix<T>::transpose()
             temp->array[i][j] = this->array[j][i];
         }
     }
-    temp->printMatrix();
+    return *temp;
 }
 
-/*
-template <typename T> void Matrix<T>::operator +(Matrix<T> x){
-  Matrix<int> *mat = new Matrix<int>(this->row,this->column,0);
-          for(int i=0; i<3; i++)
-        {
-                for(int j=0; j<3; j++)
-                {
-                        mat->array[i][j]= this->array[i][j]+x.array[i][j];
-                }
-        }
-        mat->printMatrix();
-}
-*/
-
-template<typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T> otherMatrix)
+template<typename T> Matrix<T>& Matrix<T>::operator+(Matrix<T> const& otherMatrix)
 {
-    Matrix<int> *temp = new Matrix<int>(this->row,this->column,0);
-
+    temp = new Matrix<int>(this->row,this->column,0);
     for (int i = 0; i < this->row; ++i)
     {
         for (int j = 0; j < this->column; ++j)
@@ -183,79 +183,129 @@ template<typename T> Matrix<T> Matrix<T>::operator+(const Matrix<T> otherMatrix)
             temp->array[i][j] = this->array[i][j] + otherMatrix.array[i][j];
         }
     }
-
-
-
-
-    cout<<"+ Operator Overloading"<<endl;
-    temp->printMatrix();
     return (*temp);
 }
 
-template<typename T> Matrix<T> Matrix<T>::operator=(const Matrix<T> otherMatrix)
+template<typename T> Matrix<T>& Matrix<T>::operator+(T sumValue)
 {
-    // Matrix<int> *temp = new Matrix<int>(this->row,this->column,0);
+    for (int i = 0; i < this->row; ++i)
+    {
+        for (int j = 0; j < this->column; ++j)
+        {
+            this->array[i][j] = this->array[i][j] + (scalarOperations(sumValue)).array[i][j];
+        }
+    }
+    return (*this);
+}
+
+template<typename T> Matrix<T>& Matrix<T>::operator-(Matrix<T> const& otherMatrix)
+{
+    temp = new Matrix<int>(this->row,this->column,0);
 
     for (int i = 0; i < this->row; ++i)
     {
         for (int j = 0; j < this->column; ++j)
         {
-            this->array[i][j] = otherMatrix.array[i][j];
+            temp->array[i][j] = this->array[i][j] - otherMatrix.array[i][j];
         }
     }
-   // cout<<" = Operator Overloading"<<endl;
-    return *this;
+    return (*temp);
 }
 
-
-template <typename T>int Matrix<T>::determinant(T array, T n)
+template<typename T> Matrix<T>& Matrix<T>::operator-(T subValue)
 {
-    int det = 0;
-    int submatrix[n][n];
+    for (int i = 0; i < this->row; ++i)
+    {
+        for (int j = 0; j < this->column; ++j)
+        {
+            this->array[i][j] = this->array[i][j] - (scalarOperations(subValue)).array[i][j];
+        }
+    }
+    return (*this);
+}
 
-    if (n == 2)
-        return ((  this->array[0][0]* this->array[1][1]) - (this->array[1][0] * this->array[0][1]));
+template<typename T> Matrix<T>& Matrix<T>::operator*(Matrix<T> const& otherMatrix)
+{
+    temp = new Matrix<int>(this->row,this->column,0);
+
+    for (int i = 0; i < this->row; ++i)
+    {
+        for (int j = 0; j < this->column; ++j)
+        {
+            for (int k = 0; k < this->column; k++)
+            {
+                temp->array[i][j] += this->array[i][k] * otherMatrix.array[k][j];
+            }
+        }
+    }
+    return (*temp);
+}
+template<typename T> Matrix<T>& Matrix<T>::operator*(T productValue)
+{
+
+    for (int i = 0; i < this->row; ++i)
+    {
+        for (int j = 0; j < this->column; ++j)
+        {
+            this->array[i][j]=this->array[i][j]*productValue;
+        }
+    }
+    return (*this);
+
+}
+template<typename T> Matrix<T>& Matrix<T>::operator/(T divValue)
+{
+    if(divValue==0)
+    {
+        cout<< "*******************\nSifira bolme hatasi alindi\nOrjinal matris tekrar gonderildi...\n*******************" << endl;
+    }
+
     else
     {
-        for (int x = 0; x < n; x++)
+        for (int i = 0; i < this->row; ++i)
         {
-            int subi = 0;
-            for (int i = 1; i < n; i++)
+            for (int j = 0; j < this->column; ++j)
             {
-                int subj = 0;
-                for (int j = 0; j < n; j++)
-                {
-                    if (j == x)
-                        continue;
-                    submatrix[subi][subj] = this->array[i][j];
-                    subj++;
-                }
-                subi++;
+                this->array[i][j]=this->array[i][j]/divValue;
             }
-            det = det + (pow(-1, x) * this->array[0][x] * determinant( submatrix[n][n], n - 1 ));
         }
     }
-    return det;
+    return (*this);
 }
+template<typename T> Matrix<T>& Matrix<T>::operator%(T modValue)
+{
+    if(modValue==0)
+    {
+        cout<< "*******************\nSifira bolme hatasi alindi\nOrjinal matris tekrar gonderildi...\n*******************" << endl;
+    }
 
-/*
-template <typename T> void Matrix<T>::det(){
-
-    Matrix<int> *temp = new Matrix<int>(this->row,this->column,0);
-  //  int determinant=0;
-
-    //if (this->row==2 && this->column==2)
-      // determinant= (( this->array[0][0] * this->array[1][1]) - (this->array[1][0] * this->array[0][1]));
-       //cout<<determinant<<endl;
-    // determinant(this->array,this->column);
+    else
+    {
+        for (int i = 0; i < this->row; ++i)
+        {
+            for (int j = 0; j < this->column; ++j)
+            {
+                this->array[i][j]=this->array[i][j]%modValue;
+            }
+        }
+    }
+    return (*this);
 }
-
-*/
-
-
+template<typename T> Matrix<T>& Matrix<T>::operator^(T upValue)
+{
 
 
 
+        for (int i = 0; i < this->row; ++i)
+        {
+            for (int j = 0; j < this->column; ++j)
+            {
+                this->array[i][j]=pow(this->array[i][j],upValue);
+            }
+        }
+
+    return (*this);
+}
 
 //Hata vermemesi icin
 template class Matrix<int>;
@@ -263,4 +313,5 @@ template class Matrix<int>;
 template <typename T> Matrix<T>::~Matrix()
 {
     delete array;
+    delete temp;
 }

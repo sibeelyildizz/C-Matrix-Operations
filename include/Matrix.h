@@ -8,11 +8,19 @@ public:
     Matrix();
     Matrix(T,T,T);
     Matrix(T,T,char);
-    void transpose();
+    Matrix<T>& transpose();
     void printMatrix();
     void printMatrix(char *file);
-    Matrix<T> operator+ (const Matrix<T> otherMatrix);
-    Matrix<T> operator= (const Matrix<T> otherMatrix);
+    Matrix<T>& operator+ (Matrix<T> const& otherMatrix);
+    Matrix<T>& operator- (Matrix<T> const& otherMatrix);
+    Matrix<T>& operator* (Matrix<T> const& otherMatrix);
+    Matrix<T>& operator+ (T);
+    Matrix<T>& operator- (T);
+    Matrix<T>& operator* (T);
+    Matrix<T>& operator/ (T);
+    Matrix<T>& operator% (T);
+    Matrix<T>& operator^ (T);
+
     virtual ~Matrix();
 
     int determinant(T array, T n);
@@ -21,10 +29,11 @@ public:
 private:
     T row, column, value;
     T **array;
+    Matrix<int> *temp;
     void createMatrix(T,T,T);
     void IdentityMatrix(T,T);
     void randomMatrix(T,T);
-    void scalarOperations(T);
+    Matrix<T>& scalarOperations(T);
 
 };
 

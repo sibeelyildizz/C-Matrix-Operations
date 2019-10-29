@@ -3,15 +3,17 @@
 	<iostream>
 	<cstdlib>
 
-1571917718 source:c:\users\sibel\desktop\github\2019_oop_homework\main.cpp
+1572380387 source:c:\users\sibel\desktop\github\2019_oop_homework\main.cpp
 	<iostream>
-	<cstdlib>
 	"Matrix.h"
 
-1571923205 c:\users\sibel\desktop\github\2019_oop_homework\include\matrix.h
+1572380668 c:\users\sibel\desktop\github\2019_oop_homework\include\matrix.h
+
+1572380678 source:c:\users\sibel\desktop\github\2019_oop_homework\src\matrix.cpp
+	"Matrix.h"
 	<iostream>
 	<stdlib.h>
-
-1571824153 source:c:\users\sibel\desktop\github\2019_oop_homework\src\matrix.cpp
-	"Matrix.h"
+	<time.h>
+	<fstream>
+	<math.h>
 
