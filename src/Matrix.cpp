@@ -2,8 +2,12 @@
 #include <iostream>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>
+#include <string.h>
 #include <fstream>  //file
 #include <math.h>
+#include <algorithm>
+
+
 using namespace std;
 
 /************************************************************************************/
@@ -102,7 +106,7 @@ template <typename T> void Matrix <T>::randomMatrix(T r,T c)
     {
         for(int j=0; j<c; j++)
         {
-            array[i][j]=rand() %255;
+            array[i][j]=rand() %5;
         }
     }
 }
@@ -296,17 +300,195 @@ template<typename T> Matrix<T>& Matrix<T>::operator^(T upValue)
 
 
 
-        for (int i = 0; i < this->row; ++i)
+    for (int i = 0; i < this->row; ++i)
+    {
+        for (int j = 0; j < this->column; ++j)
         {
-            for (int j = 0; j < this->column; ++j)
-            {
-                this->array[i][j]=pow(this->array[i][j],upValue);
-            }
+            this->array[i][j]=pow(this->array[i][j],upValue);
         }
+    }
 
     return (*this);
 }
+template<typename T> T Matrix<T>::det()
+{
+    return Matrix<T>::determinant(*this);
+}
+template<typename T> T  Matrix<T>::determinant(Matrix<T> matrix)
+{
 
+    int c, subi, i, j, subj, d=0;
+
+    temp = new Matrix<int>(this->row,this->column,0);
+    if (this->column == 2)
+    {
+        d= (this->array[0][0] * this->array[1][1]) - (this->array[1][0] * this->array[0][1]);
+        cout<<d<<endl;
+    }
+    else
+    {
+        for(c = 0; c < this->column; c++)
+        {
+            subi = 0;
+            for(i = 1; i < this->column; i++)
+            {
+                subj = 0;
+                for(j = 0; j < this->column; j++)
+                {
+                    if (j == c)
+                    {
+                        continue;
+                    }
+                    temp->array[subi][subj] = this->array[i][j];
+                    subj++;
+
+                }
+                subi++;
+            }
+            d = d + (pow(-1,c) * this->array[0][c] * determinant(*temp));
+
+        }
+
+        cout<<d<<endl;
+    }
+
+    return d;
+}
+
+
+
+
+template<typename T> T Matrix<T>::inv()
+{
+    return Matrix<T>::inv(*this);
+}
+template<typename T> T Matrix<T>::inv(const Matrix<T> m)
+{
+    //determinant hesabý
+
+    double kof[3][3],ters[3][3],ters1[2][2],a[2][2];
+    int det;
+
+    if(this->column==2 && this->row==2)
+    {
+        det=this->array[0][0]*this->array[1][1]-this->array[0][1]*this->array[1][0];
+
+        if (det!=0)
+        {
+            a[0][0]=this->array[1][1];
+            a[0][1]=this->array[0][1]*(-1);
+            a[1][0]=this->array[1][0]*(-1);
+            a[1][1]=this->array[0][0];
+            for(int i=0; i<2; i++)
+            {
+                for(int j=0; j<2; j++)
+                {
+                    ters1[i][j] = a[i][j]/det;//tersinin alýnma iþlemi
+                }
+            }
+
+            for(int i=0; i<=1; i++)
+            {
+                for(int j=0; j<=1; j++)
+                {
+                    cout<<ters1[i][j]<<"   ";
+                }
+                cout<<endl;
+            }
+
+        }
+        else
+            cout<<"matrisin tersi yoktur "<<endl;
+
+
+    }
+    else
+    {
+        int determinant=0;
+        determinant = (this->array[0][0]*((this->array[1][1]*this->array[2][2])-(this->array[1][2]*this->array[2][1]))-this->array[0][1]*((this->array[1][0]*this->array[2][2])-(this->array[1][2]*this->array[2][0]))+this->array[0][2]*((this->array[1][0]*this->array[2][1]-this->array[1][1]*this->array[2][0])));
+
+
+
+        if (determinant!=0)
+        {
+//kofaktör matrisi oluþturulmasý
+            kof[0][0]= (this->array[1][1]*this->array[2][2]-this->array[1][2]*this->array[2][1]);
+            kof[0][1]= -(this->array[1][0]*this->array[2][2]-this->array[1][2]*this->array[2][0]);
+            kof[0][2]= (this->array[1][0]*this->array[2][1]-this->array[1][1]*this->array[2][0]);
+            kof[1][0]= -(this->array[0][1]*this->array[2][2]-this->array[0][2]*this->array[2][1]);
+            kof[1][1]= (this->array[0][0]*this->array[2][2]-this->array[0][2]*this->array[2][0]);
+            kof[1][2]= -(this->array[0][0]*this->array[2][1]-this->array[0][1]*this->array[2][0]);
+            kof[2][0]= (this->array[0][1]*this->array[1][2]-this->array[1][1]*this->array[0][2]);
+            kof[2][1]= -(this->array[0][0]*this->array[1][2]-this->array[1][0]*this->array[0][2]);
+            kof[2][2]= (this->array[0][0]*this->array[1][1]-this->array[1][0]*this->array[0][1]);
+
+            for(int i=0; i<3; i++)
+            {
+                for(int j=0; j<3; j++)
+                {
+                    ters[i][j] = kof[i][j]/determinant;//tersinin alýnma iþlemi
+                }
+            }
+
+            for(int j=0; j<=2; j++)
+            {
+                for(int i=0; i<=2; i++)
+                {
+                    cout<<ters[i][j]<<"      ";
+                    cout<<ters[i][j]<<"      ";
+                }
+                cout<<endl;
+            }
+        }
+        else
+            cout<<"matrisin tersi yoktur "<<endl;
+    }
+}
+
+template<typename T> Matrix<T>& Matrix<T>::emul(Matrix<T> const& otherMatrix)
+{
+    temp = new Matrix<int>(this->row,this->column,0);
+    for (int i = 0; i < this->row; ++i)
+    {
+        for (int j = 0; j < this->column; ++j)
+        {
+            temp->array[i][j] = this->array[i][j] * otherMatrix.array[i][j];
+
+
+        }
+    }
+    return (*temp);
+}
+template<typename T> T Matrix<T>::resize(int row, int column,int value)
+{
+    if (row < 0 || column < 0)
+    {
+        cout << "Invalid resize";
+        return 0;
+    }
+
+    //  int newsize = row * column;
+    temp = new Matrix<int>(this->row,this->column,0);
+
+
+    // for(int i=0; i<newsize; i += 1) {
+    //   temp->array[i] = 0;
+    //}
+    for(int i=0; i<row; i += 1)
+    {
+        for(int j=0; j<column; j += 1)
+        {
+            temp->array[j+i*column] = array[j+i*this->column];
+        }
+    }
+    delete [] array;
+    array = temp->array;
+    //  size = newsize;
+    this->row = row;
+    this->column = column;
+    this->value=value;
+
+}
 //Hata vermemesi icin
 template class Matrix<int>;
 //Yikici fonksiyon
