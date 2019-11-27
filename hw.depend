@@ -3,14 +3,17 @@
 	<iostream>
 	<cstdlib>
 
-1574525655 source:c:\users\sibel\desktop\github\2019_oop_homework\main.cpp
+1574871395 source:c:\users\sibel\desktop\github\2019_oop_homework\main.cpp
 	<iostream>
 	"Matrix.h"
 	"Table.h"
 
-1574524520 c:\users\sibel\desktop\github\2019_oop_homework\include\matrix.h
+1574863536 c:\users\sibel\desktop\github\2019_oop_homework\include\matrix.h
+	<iostream>
+	<stdlib.h>
+	<fstream>
 
-1574525438 source:c:\users\sibel\desktop\github\2019_oop_homework\src\matrix.cpp
+1574536862 source:c:\users\sibel\desktop\github\2019_oop_homework\src\matrix.cpp
 	"Matrix.h"
 	<iostream>
 	<stdlib.h>
@@ -23,6 +26,6 @@
 1574503534 source:c:\users\sibel\desktop\github\2019_oop_homework\src\table.cpp
 	"Table.h"
 
-1574507178 c:\users\sibel\desktop\github\2019_oop_homework\include\table.h
+1574873104 c:\users\sibel\desktop\github\2019_oop_homework\include\table.h
 	<Matrix.h>
 
