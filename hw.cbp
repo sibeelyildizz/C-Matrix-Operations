@@ -37,8 +37,6 @@
 		<Unit filename="include/Matrix.h" />
 		<Unit filename="include/Table.h" />
 		<Unit filename="main.cpp" />
-		<Unit filename="src/Matrix.cpp" />
-		<Unit filename="src/Table.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

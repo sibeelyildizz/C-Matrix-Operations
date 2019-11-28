@@ -1,12 +1,15 @@
 #include <iostream>
 #include <stdlib.h>
 #include <fstream>
+#include <math.h>
+#include <time.h>
 
 #ifndef OOP1_MATRIX_H
 #define OOP1_MATRIX_H
 
 using namespace std;
-template <typename T> class Matrix {
+template <typename T> class Matrix
+{
 public:
     Matrix();
     Matrix(T,T,T);
@@ -14,6 +17,7 @@ public:
     Matrix<T>& transpose();
     void printMatrix();
     void printMatrix(char *file);
+    Matrix<T>& emul(Matrix<T> const& matrix);
     Matrix<T>& operator+ (Matrix<T> const& otherMatrix);
     Matrix<T>& operator- (Matrix<T> const& otherMatrix);
     Matrix<T>& operator* (Matrix<T> const& otherMatrix);
@@ -23,35 +27,32 @@ public:
     Matrix<T>& operator/ (T);
     Matrix<T>& operator% (T);
     Matrix<T>& operator^ (T);
+    T det();
 
-    // T det();
     // T inv();
     // T resize(int row, int column,int value);
-    Matrix<T>& emul(Matrix<T> const& otherMatrix);
-    void createMatrix(T,T,T);
-
 
 protected:
 
-     T **array;
-    T row, column, value;
-
-
+    T **array;
+    T  row, column, value;
 
 private:
     Matrix<int> *temp{};
     void IdentityMatrix(T,T);
     void randomMatrix(T,T);
     Matrix<T>& scalarOperations(T);
+    T calculateDeterminant(Matrix<T> const&,T);
+    void createMatrix(T,T,T);
 };
-
 
 /************************************************************************************/
 //                            KURUCU FONKSIYONLAR
 /************************************************************************************/
 //Parametresiz Kurucu
 template<typename T>
-Matrix<T>::Matrix() {
+Matrix<T>::Matrix()
+{
     this->column = 10;
     this->row = 10;
     this->value = 0;
@@ -60,7 +61,8 @@ Matrix<T>::Matrix() {
 
 // Parametreli Kurucu
 template<typename T>
-Matrix<T>::Matrix(T _row, T _column, T _value) {
+Matrix<T>::Matrix(T _row, T _column, T _value)
+{
     this->row = _row;
     this->column = _column;
     this->value = _value;
@@ -69,7 +71,8 @@ Matrix<T>::Matrix(T _row, T _column, T _value) {
 
 // Birim matris veya random matris icin kurucu fonksiyon
 template<typename T>
-Matrix<T>::Matrix(T _row, T _column, char _value) {
+Matrix<T>::Matrix(T _row, T _column, char _value)
+{
     this->row = _row;
     this->column = _column;
     this->value = _value;
@@ -89,7 +92,8 @@ Matrix<T>::Matrix(T _row, T _column, char _value) {
 
 // Matris Olusturma
 template<typename T>
-void Matrix<T>::createMatrix(T r, T c, T v) {
+void Matrix<T>::createMatrix(T r, T c, T v)
+{
     this->array = new T*[r];
 
     for (int i=0; i < r; i++)
@@ -102,8 +106,11 @@ void Matrix<T>::createMatrix(T r, T c, T v) {
 }
 
 
+
+
 template<typename T>
-void Matrix<T>::IdentityMatrix(T r, T c) {
+void Matrix<T>::IdentityMatrix(T r, T c)
+{
     this->array = new T*[row];
     for (int i=0; i<row; i++)
         array[i] = new T[column];
@@ -119,12 +126,14 @@ void Matrix<T>::IdentityMatrix(T r, T c) {
 }
 
 template<typename T>
-void Matrix<T>::randomMatrix(T r, T c) {
+void Matrix<T>::randomMatrix(T r, T c)
+{
 
     this->array = new T*[row];
     for (int i=0; i<row; i++)
         array[i] = new T[column];
 
+    srand(time(NULL));
 
     for(int i=0; i<r; i++)
         for(int j=0; j<c; j++)
@@ -132,7 +141,8 @@ void Matrix<T>::randomMatrix(T r, T c) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::scalarOperations(T productValue) {
+Matrix<T> &Matrix<T>::scalarOperations(T productValue)
+{
     temp = new Matrix<int>(this->row,this->column,1);
 
     for(int i = 0; i<this->row; i++)
@@ -147,13 +157,53 @@ Matrix<T> &Matrix<T>::scalarOperations(T productValue) {
     return *temp;
 }
 
+
+template<typename T>
+T Matrix<T>::calculateDeterminant(Matrix<T> const & mtrx, T size) {
+		if (mtrx.row == mtrx.column) {
+			int determinant = 0;
+			temp = new Matrix<int>(this->row, this->column, 1);
+			if (size == 2) {
+				return (mtrx.array[0][0] * mtrx.array[1][1]) - (mtrx.array[1][0] * mtrx.array[0][1]);
+			}
+			else {
+				for (int x = 0; x < size; x++) {
+					int subi = 0;
+					for (int i = 1; i < size; i++) {
+						int subj = 0;
+						for (int j = 0; j < size; j++) {
+							if (j == x)
+								continue;
+							temp->array[subi][subj] = mtrx.array[i][j];
+							subj++;
+						}
+						subi++;
+					}
+					determinant = determinant + (pow(-1, x) * mtrx.array[0][x] * calculateDeterminant(*temp, size - 1));
+				}
+				return determinant;
+			}
+		}
+		else {
+			cout << "Lutfen Kare Matris Giriniz!" << endl;
+			return 0;
+		}
+}
+
 /**********************************************************************/
 //                 PUBLIC  FONKSIYONLAR
 /**********************************************************************/
 
+template<typename T>
+T Matrix<T>::det() {
+	return calculateDeterminant((*this),this->row);
+}
+
+
 //Matris Yazdirma
 template<typename T>
-void Matrix<T>::printMatrix() {
+void Matrix<T>::printMatrix()
+{
     cout<<" ********* PRINT MATRIX ********** " <<endl;
     for(int i=0; i<this->row; i++)
     {
@@ -167,7 +217,8 @@ void Matrix<T>::printMatrix() {
 
 // Dosyaya yazdirma fonksiyonu
 template<typename T>
-void Matrix<T>::printMatrix(char *file) {
+void Matrix<T>::printMatrix(char *file)
+{
     ofstream myfile (file);
     if (myfile.is_open())
     {
@@ -187,7 +238,8 @@ void Matrix<T>::printMatrix(char *file) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator+(const Matrix<T> &otherMatrix) {
+Matrix<T> &Matrix<T>::operator+(const Matrix<T> &otherMatrix)
+{
     temp = new Matrix<int>(this->row,this->column,0);
     for (int i = 0; i < this->row; ++i)
     {
@@ -202,7 +254,8 @@ Matrix<T> &Matrix<T>::operator+(const Matrix<T> &otherMatrix) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator+(T sumValue) {
+Matrix<T> &Matrix<T>::operator+(T sumValue)
+{
 // ornek gonderim sekli  =>  (*m1) = (*m1) + 12;
 
     for (int i = 0; i < this->row; ++i)
@@ -213,7 +266,8 @@ Matrix<T> &Matrix<T>::operator+(T sumValue) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator-(const Matrix<T> &otherMatrix) {
+Matrix<T> &Matrix<T>::operator-(const Matrix<T> &otherMatrix)
+{
     temp = new Matrix<int>(this->row,this->column,0);
 
     for (int i = 0; i < this->row; ++i)
@@ -225,7 +279,8 @@ Matrix<T> &Matrix<T>::operator-(const Matrix<T> &otherMatrix) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator-(T subValue) {
+Matrix<T> &Matrix<T>::operator-(T subValue)
+{
     for (int i = 0; i < this->row; ++i)
         for (int j = 0; j < this->column; ++j)
             this->array[i][j] = this->array[i][j] - (scalarOperations(subValue)).array[i][j];
@@ -234,7 +289,8 @@ Matrix<T> &Matrix<T>::operator-(T subValue) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator*(const Matrix<T> &otherMatrix) {
+Matrix<T> &Matrix<T>::operator*(const Matrix<T> &otherMatrix)
+{
     temp = new Matrix<int>(this->row,this->column,0);
 
     for (int i = 0; i < this->row; ++i)
@@ -247,7 +303,8 @@ Matrix<T> &Matrix<T>::operator*(const Matrix<T> &otherMatrix) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator*(T productValue) {
+Matrix<T> &Matrix<T>::operator*(T productValue)
+{
 
     for (int i = 0; i < this->row; ++i)
         for (int j = 0; j < this->column; ++j)
@@ -257,7 +314,8 @@ Matrix<T> &Matrix<T>::operator*(T productValue) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator/(T divValue) {
+Matrix<T> &Matrix<T>::operator/(T divValue)
+{
 
     if(divValue==0)
         cout<< "*******************\nSifira bolme hatasi alindi\nOrjinal matris tekrar gonderildi...\n*******************" << endl;
@@ -272,7 +330,8 @@ Matrix<T> &Matrix<T>::operator/(T divValue) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator%(T modValue) {
+Matrix<T> &Matrix<T>::operator%(T modValue)
+{
     if(modValue==0)
         cout<< "*******************\nSifira bolme hatasi alindi\nOrjinal matris tekrar gonderildi...\n*******************" << endl;
     else
@@ -285,7 +344,8 @@ Matrix<T> &Matrix<T>::operator%(T modValue) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::operator^(T upValue) {
+Matrix<T> &Matrix<T>::operator^(T upValue)
+{
     for (int i = 0; i < this->row; ++i)
         for (int j = 0; j < this->column; ++j)
             this->array[i][j]=pow(this->array[i][j],upValue);
@@ -294,7 +354,8 @@ Matrix<T> &Matrix<T>::operator^(T upValue) {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::transpose() {
+Matrix<T> &Matrix<T>::transpose()
+{
     temp = new Matrix<int>(this->row,this->column,0);
 
     for(int i=0; i<this->row; i++)
@@ -307,7 +368,8 @@ Matrix<T> &Matrix<T>::transpose() {
 }
 
 template<typename T>
-Matrix<T> &Matrix<T>::emul(const Matrix<T> &otherMatrix) {
+Matrix<T> &Matrix<T>::emul(const Matrix<T> &otherMatrix)
+{
     temp = new Matrix<int>(this->row,this->column,0);
 
     for (int i = 0; i < this->row; ++i)
