@@ -14,7 +14,8 @@ template <typename T>
 class Table : public Matrix<T>
 {
 public:
-    Table() :Matrix<T>::Matrix() {}    //inheritance constructor
+   Table() :Matrix<T>::Matrix() {}    //inheritance constructor
+
     Table(T _row,T _column,T _value):Matrix<T>::Matrix(_row,_column,_value) {} //inheritance constructor
     Table(T _row,T _column,char ch):Matrix<T>::Matrix(_row,_column,ch) {}  //inheritance constructor
     T itemAt(int r,int c);
@@ -32,13 +33,15 @@ private:
     string *colName;
     string *RowName;
     string alphabet = {"ABCDEFGHIJKLMNOPQRSTUVYXWZ"};
+    void createMatrix(T,T,T);
 };
+
 
 template <typename T>
 T Table<T>::itemAt(int r, int c)
 {
 
-    return this->array[r-1][c-1];
+    return this->array[r][c];
 }
 template <typename T>
 T Table<T>::itemAt(string s)
@@ -76,7 +79,7 @@ T Table<T>::itemAt(string rs,string cs){
         }
     }
      if(index1<=this->column && index2<=this->row)
-     {cout<<index1<<"-"<<index2<<endl;
+     {//cout<<index1<<"-"<<index2<<endl;
         return this->array[index1][index2];}
     else
     {
