@@ -32,6 +32,8 @@ public:
     T inv();
     Matrix<T> resizeMatrix(int,int);
 
+    ~Matrix();
+
 
 
 protected:
@@ -443,6 +445,11 @@ Matrix<T> Matrix<T>::emul(const Matrix<T> &otherMatrix)
 
     return temp;
 
+}
+template<typename T>
+Matrix<T>::~Matrix(){
+    delete [] *temp;
+    delete [] **array;
 }
 
 #endif OOP1_MATRIX_H
