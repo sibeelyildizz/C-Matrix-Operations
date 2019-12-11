@@ -29,7 +29,7 @@ public:
     Matrix<T>& operator% (T);
     Matrix<T>& operator^ (T);
     T det();
-    T inv();
+    void inv();
     Matrix<T> resizeMatrix(int,int);
 
     ~Matrix();
@@ -47,7 +47,6 @@ private:
     void randomMatrix(int,int);
     Matrix<T>& scalarOperations(T);
     T calculateDeterminant(Matrix<T> const&,T);
-    T calculateInverse(Matrix<T> const&);
     void createMatrix(int,int,T);
     void showErrorMessage(char *msg);
 };
@@ -256,6 +255,33 @@ T Matrix<T>::det()
 {
     return calculateDeterminant((*this),this->row);
 }
+template<typename T>
+void Matrix<T>::inv(){
+    Matrix<T> temp(this->row,this->column,0);
+    float d,k;
+    for(int i=0;i<this->row;i++){
+        d=this->array[i][i];
+        for(int j=0;j<this->column;j++){
+            this->array[i][j]=this->array[i][j]/d;
+            temp.array[i][j]=temp.array[i][j]/d;
+        }
+        for(int x=0;x<this->row;x++){
+            if(x!=i){
+                k=this->array[x][i];
+                for(int j=0;j<this->column;j++){
+                    this->array[x][j]=this->array[x][j]-(this->array[i][j]*k);
+                    temp.array[x][j]=temp.array[x][j]-(temp.array[i][j]*k);
+                }
+            }
+        }
+    }
+    for(int i=0;i<this->row;i++){
+        for(int j=0;j<this->column;j++){
+            this->array[i][j]=temp.array[i][j];
+        }
+    }
+
+}
 
 //Matris Yazdirma
 template<typename T>
@@ -448,8 +474,8 @@ Matrix<T> Matrix<T>::emul(const Matrix<T> &otherMatrix)
 }
 template<typename T>
 Matrix<T>::~Matrix(){
-    delete [] *temp;
-    delete [] **array;
+    //delete[] temp;
+    //delete[] array;
 }
 
 #endif OOP1_MATRIX_H
